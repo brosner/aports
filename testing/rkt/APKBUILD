@@ -27,6 +27,9 @@ build() {
 		--localstatedir=/var \
 		--enable-tpm=auto \
 		--enable-sdjournal=auto \
+		--with-stage1-default-flavor=coreos \
+		--with-stage1-default-images-directory=/usr/lib/rkt/stage1-images \
+		--with-stage1-default-location=/usr/lib/rkt/stage1-images/stage1-coreos.aci \
 		|| return 1
 	make || return 1
 }
@@ -34,6 +37,7 @@ build() {
 package() {
 	cd "$builddir"
 	install -Dm755 "build-rkt-$pkgver"/target/bin/rkt "$pkgdir"/usr/bin/rkt
+	install -Dm755 "build-rkt-$pkgver"/target/tools/actool "$pkgdir"/usr/bin/actool
 	local flavor; for flavor in fly coreos kvm; do
 		install -Dm644 \
 			"build-rkt-$pkgver"/target/bin/stage1-${flavor}.aci \
